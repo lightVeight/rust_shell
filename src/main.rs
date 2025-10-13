@@ -1,5 +1,5 @@
-use std::io::{self, Write};
 use std::ffi::OsString;
+use std::io::{self, Write};
 
 mod cmd; // include src/cmd.rs
 
@@ -8,7 +8,7 @@ fn main() -> std::process::ExitCode {
     let mut line = String::new();
 
     loop {
-        print!("> ");
+        print!("$ ");
         io::stdout().flush().ok();
 
         line.clear();
@@ -16,9 +16,15 @@ fn main() -> std::process::ExitCode {
             break; // EOF (Ctrl+D)
         }
 
-        let word = line.split_whitespace().next();
-        match word {
-            Some("pwd") => {
+        let mut parts = line.split_whitespace();
+        let cmd_name = match parts.next() {
+            Some(name) => name,
+            None => continue,
+        };
+        let args: Vec<OsString> = parts.map(OsString::from).collect();
+
+        match cmd_name {
+            "pwd" => {
                 let code = cmd::pwd::run(&[]).unwrap_or_else(|e| {
                     eprintln!("{e}");
                     1
@@ -27,11 +33,24 @@ fn main() -> std::process::ExitCode {
                     return std::process::ExitCode::from(code as u8);
                 }
             }
-            Some("exit") => break,
-            Some(other) => eprintln!("unknown command: {other}"),
-            None => {}
+            "echo" => {
+                if let Err(e) = cmd::echo::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
+            "cd" => {
+                if let Err(e) = cmd::cd::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
+            "cat" => {
+                if let Err(e) = cmd::cat::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
+            "exit" => break,
+            invalid => eprintln!("Command '{invalid}' not found"),
         }
     }
-
     std::process::ExitCode::from(0)
 }

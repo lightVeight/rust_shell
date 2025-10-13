@@ -1,5 +1,4 @@
-> simple shell in rust just for learning!
-
+> A simple UNIX-like shell in rust just for learning!
 
 ## Supported Commands
 - pwd
