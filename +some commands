@@ -7,7 +7,10 @@
 - ls (-l, -a, -F)
 - cat
 - cp
+- head
+- tail
 - rm (-r)
 - mv
 - mkdir
+- wc
 - exit
