@@ -32,8 +32,9 @@ pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
             names.push(name);
         }
 
+        names.sort_by(|a, b| a.to_string_lossy().cmp(&b.to_string_lossy()));
         for name in names {
-            print!("{} ", name.to_string_lossy());
+            print!("{}  ", name.to_string_lossy());
         }
         println!();
         return Ok(0);
