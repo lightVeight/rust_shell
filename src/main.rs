@@ -48,6 +48,11 @@ fn main() -> std::process::ExitCode {
                     eprintln!("{e}");
                 }
             }
+            "mkdir" => {
+                if let Err(e) = cmd::mkdir::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
             "exit" => break,
             invalid => eprintln!("Command '{invalid}' not found"),
         }

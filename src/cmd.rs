@@ -1,4 +1,5 @@
-pub mod pwd;
-pub mod echo;
-pub mod cd;
 pub mod cat;
+pub mod cd;
+pub mod echo;
+pub mod mkdir;
+pub mod pwd;
