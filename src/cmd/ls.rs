@@ -1,9 +1,22 @@
-use anyhow::Context;
+use anyhow::{Context, bail};
 use std::ffi::OsString;
 use std::path::Path;
 
 pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
-    let target = if let Some(first) = args.first() {
+    let mut show_all = false; // -a
+    let mut argu: Option<&OsString> = None;
+
+    for a in args {
+        if a == "-a" {
+            show_all = true;
+        } else if argu.is_none() {
+            argu = Some(a);
+        } else {
+            bail!("ls: too many arguments");
+        }
+    }
+
+    let target = if let Some(first) = argu {
         Path::new(first)
     } else {
         Path::new(".")
@@ -25,8 +38,8 @@ pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
             let entry = entry?;
             let name = entry.file_name();
 
-            // skip dotfiles
-            if name.to_string_lossy().starts_with('.') {
+            // skip dotfiles only if no -a
+            if !show_all && name.to_string_lossy().starts_with('.') {
                 continue;
             }
             names.push(name);
