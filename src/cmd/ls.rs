@@ -2,13 +2,31 @@ use anyhow::{Context, bail};
 use std::ffi::OsString;
 use std::path::Path;
 
+#[cfg(unix)]
+fn classify_suffix(ft: &std::fs::FileType, meta: &std::fs::Metadata) -> &'static str {
+    use std::os::unix::fs::PermissionsExt;
+    if ft.is_symlink() {
+        "@"
+    } else if ft.is_dir() {
+        "/"
+    } else {
+        //regular file
+        let mode = meta.permissions().mode();
+        //if any of owner/group/others executable bit is set means '*'
+        if mode & 0o111 != 0 { "*" } else { "" }
+    }
+}
+
 pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
     let mut show_all = false; // -a
+    let mut classify = false; // -F
     let mut argu: Option<&OsString> = None;
 
     for a in args {
         if a == "-a" {
             show_all = true;
+        } else if a == "-F" {
+            classify = true;
         } else if argu.is_none() {
             argu = Some(a);
         } else {
@@ -26,12 +44,19 @@ pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
         .with_context(|| format!("ls: cannot access '{}'", target.display()))?;
 
     if meta.is_file() || meta.file_type().is_symlink() {
-        println!("{}", target.display());
+        if classify {
+            let ft = meta.file_type();
+            let suffix = classify_suffix(&ft, &meta);
+            println!("{}{}", target.display(), suffix);
+        } else {
+            println!("{}", target.display());
+        }
         return Ok(0);
     }
 
     if meta.is_dir() {
-        let mut names = Vec::new();
+        let mut labeled: Vec<String> = Vec::new();
+
         for entry in std::fs::read_dir(target)
             .with_context(|| format!("ls: cannot open directory '{}'", target.display()))?
         {
@@ -42,12 +67,20 @@ pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
             if !show_all && name.to_string_lossy().starts_with('.') {
                 continue;
             }
-            names.push(name);
+
+            if classify {
+                let entry_meta = std::fs::symlink_metadata(entry.path())?;
+                let ft = entry_meta.file_type();
+                let suffix = classify_suffix(&ft, &entry_meta);
+                labeled.push(format!("{}{}", name.to_string_lossy(), suffix));
+            } else {
+                labeled.push(name.to_string_lossy().into_owned());
+            }
         }
 
-        names.sort_by(|a, b| a.to_string_lossy().cmp(&b.to_string_lossy()));
-        for name in names {
-            print!("{}  ", name.to_string_lossy());
+        labeled.sort();
+        for s in labeled {
+            print!("{}  ", s);
         }
         println!();
         return Ok(0);
