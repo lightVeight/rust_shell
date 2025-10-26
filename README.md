@@ -1,6 +1,6 @@
 > A simple UNIX-like shell in rust for learning!
 
-## Supported Commands
+## Commands I am working on...
 - pwd (-L -P)
 - cd
 - echo (-n -e -E
