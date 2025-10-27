@@ -1,16 +1,25 @@
 > A simple UNIX-like shell in rust for learning!
 
 ## Commands I am working on...
-- pwd (-L -P)
-- cd
-- echo (-n -e -E
-- ls (-h -R -t -d -l -a -F)
-- cat (-n -b -A -)
-- wc (-l -w -c -m -L)
-- head & tail (-n <nbr> -F)
-- rm (-r)
+- cd ✅
+- echo ✅
+- ls ✅
+   - -a ✅
+   - -l
+- cat ✅
+- mkdir ✅
+- exit ✅
+- pwd ✅
+   - L
+   - P
+- rm ✅
+   - -r
+- rmdir ✅
+- cp ✅
+   - -r
+   - -R
 - mv
-- mkdir
-- rmdir
-- cp (-r -R)
-- exit
+- wc
+- head & tail
+   - -n
+   - -F
