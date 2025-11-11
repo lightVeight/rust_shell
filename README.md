@@ -16,9 +16,8 @@
    - -r
 - rmdir ✅
 - cp ✅
-   - -r
-   - -R
-- mv
+   - -r/R ✅
+- mv ✅
 - wc
 - head & tail
    - -n

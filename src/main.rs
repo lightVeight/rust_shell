@@ -73,6 +73,16 @@ fn main() -> std::process::ExitCode {
                     eprintln!("{e}");
                 }
             }
+            "mv" => {
+                if let Err(e) = cmd::mv::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
+            "clear" => {
+                if let Err(e) = cmd::clear::run(&args) {
+                    eprintln!("{e}");
+                }
+            }
             "exit" => break,
             invalid => eprintln!("Command '{invalid}' not found"),
         }

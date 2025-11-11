@@ -8,3 +8,4 @@ pub mod mv;
 pub mod pwd;
 pub mod rm;
 pub mod rmdir;
+pub mod clear;
