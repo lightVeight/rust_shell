@@ -18,6 +18,7 @@
 - cp ✅
    - -r/R ✅
 - mv ✅
+- clear ✅
 - wc
 - head & tail
    - -n
