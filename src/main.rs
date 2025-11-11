@@ -1,7 +1,7 @@
 use std::ffi::OsString;
 use std::io::{self, Write};
 
-mod cmd; // include src/cmd.rs
+mod cmd;
 
 fn main() -> std::process::ExitCode {
     let stdin = io::stdin();
