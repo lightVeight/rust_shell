@@ -1,15 +1,24 @@
-use anyhow::{Context, bail};
+use anyhow::{bail, Context, Result};
 use std::ffi::OsString;
 use std::path::Path;
 
-pub fn run(args: &[OsString]) -> Result<i32, anyhow::Error> {
-    if args.len() != 1 {
-        bail!("mkdir: expected 1 argument, got {}", args.len());
+pub fn run(args: &[OsString]) -> Result<i32> {
+    if args.is_empty() {
+        bail!("mkdir: expected at least 1 argument, got 0");
     }
-    let path = Path::new(&args[0]);
 
-    std::fs::create_dir(path)
-        .with_context(|| format!("mkdir: cannot create directory '{}'", path.display()))?;
+    let mut had_error = false;
 
-    Ok(0)
+    for arg in args {
+        let path = Path::new(arg);
+
+        if let Err(err) = std::fs::create_dir(path)
+            .with_context(|| format!("mkdir: cannot create directory '{}'", path.display()))
+        {
+            eprintln!("{err}");
+            had_error = true;
+        }
+    }
+
+    Ok(if had_error { 1 } else { 0 })
 }
